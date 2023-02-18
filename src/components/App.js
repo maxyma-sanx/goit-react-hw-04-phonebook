@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
@@ -12,68 +12,38 @@ import { ContactList } from './ContactList';
 import { Filter } from './Filter';
 import { Social } from './Social';
 
-export class App extends Component {
-  static defaultProps = {
-    initialContacts: [],
-  };
+export const App = ({ initialContacts = [] }) => {
+  const localContacts = JSON.parse(localStorage.getItem('contacts'));
 
-  static propTypes = {
-    initialContacts: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        number: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-  };
+  const [contacts, setContacts] = useState(
+    () => localContacts ?? initialContacts
+  );
+  const [filter, setFilter] = useState('');
 
-  state = {
-    contacts: [],
-    filter: '',
-  };
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  componentDidUpdate(_, prevState) {
-    const { contacts } = this.state;
-
-    if (contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(contacts));
-    }
-  }
-
-  componentDidMount() {
-    const localContacts = JSON.parse(localStorage.getItem('contacts'));
-    const { initialContacts } = this.props;
-
-    localContacts
-      ? this.setState({ contacts: localContacts })
-      : this.setState({ contacts: initialContacts });
-  }
-
-  addContact = (name, number) => {
-    const currentName = this.state.contacts.find(item => item.name === name);
+  const addContact = (name, number) => {
+    const currentName = contacts.find(item => item.name === name);
 
     if (currentName && name === currentName.name) {
       alert(`${name} is already exist!`);
       return;
     }
 
-    this.setState(prevState => ({
-      contacts: [{ name, number, id: nanoid() }, ...prevState.contacts],
-    }));
+    setContacts(prevState => [{ name, number, id: nanoid() }, ...prevState]);
   };
 
-  removeContact = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
+  const removeContact = id => {
+    setContacts(prevState => prevState.filter(contact => contact.id !== id));
   };
 
-  changeFilter = e => {
-    this.setState({ filter: e.currentTarget.value });
+  const changeFilter = e => {
+    setFilter(e.currentTarget.value);
   };
 
-  getFilteredContacts = () => {
-    const { contacts, filter } = this.state;
-
+  const getFilteredContacts = () => {
     const normalizedCaseContacts = filter.toLowerCase();
 
     return contacts.filter(contact =>
@@ -81,32 +51,32 @@ export class App extends Component {
     );
   };
 
-  render() {
-    const { contacts, filter } = this.state;
+  const filteredContacts = getFilteredContacts();
 
-    const filteredContacts = this.getFilteredContacts();
-
-    return (
-      <Wrapper>
-        <Section title="Add contact" headerContent={<Social />}>
-          <ContactForm onSubmit={this.addContact} />
+  return (
+    <Wrapper>
+      <Section title="Add contact" headerContent={<Social />}>
+        <ContactForm onSubmit={addContact} />
+      </Section>
+      {contacts.length > 0 && (
+        <Section
+          title="Contacts"
+          headerContent={<Filter value={filter} onChange={changeFilter} />}
+        >
+          <ContactList contacts={filteredContacts} onRemove={removeContact} />
         </Section>
-        {contacts.length > 0 && (
-          <Section
-            title="Contacts"
-            headerContent={
-              <Filter value={filter} onChange={this.changeFilter} />
-            }
-          >
-            <ContactList
-              contacts={filteredContacts}
-              onRemove={this.removeContact}
-            />
-          </Section>
-        )}
+      )}
 
-        <GlobalStyle />
-      </Wrapper>
-    );
-  }
-}
+      <GlobalStyle />
+    </Wrapper>
+  );
+};
+
+App.propTypes = {
+  initialContacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};

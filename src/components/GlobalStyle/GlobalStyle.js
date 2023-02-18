@@ -11,11 +11,6 @@ export const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
 
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-      monospace;
-  }
-
   h1, h2, h3, h4, h5, p, ul {
     padding: 0;
     margin: 0;

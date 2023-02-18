@@ -14,43 +14,41 @@ import {
 
 export const ContactList = ({ contacts, onRemove }) => {
   return (
-    <>
-      <ContactsTable>
-        <thead>
-          <tr>
-            <ContactsTableHead>Name</ContactsTableHead>
-            <ContactsTableHead>Phone number</ContactsTableHead>
-            <ContactsTableHead>Contacts ({contacts.length})</ContactsTableHead>
-          </tr>
-        </thead>
+    <ContactsTable>
+      <thead>
+        <tr>
+          <ContactsTableHead>Name</ContactsTableHead>
+          <ContactsTableHead>Phone number</ContactsTableHead>
+          <ContactsTableHead>Contacts ({contacts.length})</ContactsTableHead>
+        </tr>
+      </thead>
 
-        <tbody>
-          {contacts.map(({ id, name, number }) => {
-            return (
-              <ContactsTableRow key={id}>
-                <ContactsFlexCeil>
-                  <ListIcon>
-                    <FaUser size="20" color="white" />
-                  </ListIcon>
-                  {name}
-                </ContactsFlexCeil>
-                <ContactsTableCeil>{number}</ContactsTableCeil>
-                <ContactsTableCeil>
-                  <ListBtn
-                    type="button"
-                    onClick={() => {
-                      onRemove(id);
-                    }}
-                  >
-                    <FaTrashAlt size="20" />
-                  </ListBtn>
-                </ContactsTableCeil>
-              </ContactsTableRow>
-            );
-          })}
-        </tbody>
-      </ContactsTable>
-    </>
+      <tbody>
+        {contacts.map(({ id, name, number }) => {
+          return (
+            <ContactsTableRow key={id}>
+              <ContactsFlexCeil>
+                <ListIcon>
+                  <FaUser size="20" color="white" />
+                </ListIcon>
+                {name}
+              </ContactsFlexCeil>
+              <ContactsTableCeil>{number}</ContactsTableCeil>
+              <ContactsTableCeil>
+                <ListBtn
+                  type="button"
+                  onClick={() => {
+                    onRemove(id);
+                  }}
+                >
+                  <FaTrashAlt size="20" />
+                </ListBtn>
+              </ContactsTableCeil>
+            </ContactsTableRow>
+          );
+        })}
+      </tbody>
+    </ContactsTable>
   );
 };
 
