@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
 
 import { Wrapper } from './Wrapper';
 import { GlobalStyle } from './GlobalStyle';
@@ -12,8 +11,14 @@ import { ContactList } from './ContactList';
 import { Filter } from './Filter';
 import { Social } from './Social';
 
-export const App = ({ initialContacts = [] }) => {
+import data from '../data/contacts';
+
+export const App = () => {
   const localContacts = JSON.parse(localStorage.getItem('contacts'));
+  const initialContacts = data.map(contact => {
+    contact.id = nanoid();
+    return contact;
+  });
 
   const [contacts, setContacts] = useState(
     () => localContacts ?? initialContacts
@@ -70,13 +75,4 @@ export const App = ({ initialContacts = [] }) => {
       <GlobalStyle />
     </Wrapper>
   );
-};
-
-App.propTypes = {
-  initialContacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })
-  ).isRequired,
 };
